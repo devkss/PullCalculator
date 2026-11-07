@@ -1,486 +1,353 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2026 Topps Marvel Chrome & Neon Break Calculator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 Topps Marvel Chrome & Neon — Break Hit Probability Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root {
-      --bg-dark: #0b0e17;
-      --card-bg: #151a28;
-      --card-border: #2a324b;
-      --accent-cyan: #00e5ff;
-      --accent-neon: #ff2a85;
-      --accent-gold: #ffb703;
-      --text-main: #f0f4f8;
-      --text-muted: #8c96b5;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap');
 
-    * { box-sizing: border-box; }
     body {
-      margin: 0;
-      padding: 0;
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(circle at 15% 15%, rgba(0, 229, 255, 0.08) 0%, transparent 35%),
-        radial-gradient(circle at 85% 25%, rgba(255, 42, 133, 0.08) 0%, transparent 40%);
-      color: var(--text-main);
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      line-height: 1.5;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #020617;
+      background-image:
+        radial-gradient(at 10% 10%, rgba(6, 182, 212, 0.12) 0px, transparent 45%),
+        radial-gradient(at 90% 15%, rgba(236, 72, 153, 0.12) 0px, transparent 45%),
+        radial-gradient(at 50% 85%, rgba(139, 92, 246, 0.10) 0px, transparent 50%);
+      color: #f8fafc;
     }
 
-    /* Header & Nav */
-    header {
-      background: linear-gradient(90deg, #101524 0%, #1b162e 50%, #101524 100%);
-      border-bottom: 2px solid var(--card-border);
-      padding: 18px 24px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-    .brand-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .brand-badge {
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-neon));
-      color: #000;
-      font-weight: 900;
-      padding: 6px 12px;
-      border-radius: 6px;
-      letter-spacing: 0.5px;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-    }
-    h1 {
-      margin: 0;
-      font-size: 1.4rem;
-      background: linear-gradient(90deg, #fff, #a5b4fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .font-display {
+      font-family: 'Orbitron', sans-serif;
     }
 
-    .nav-tabs {
-      display: flex;
-      gap: 10px;
-    }
-    .tab-btn {
-      background: #1e2538;
-      color: var(--text-muted);
-      border: 1px solid var(--card-border);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .tab-btn.active, .tab-btn:hover {
-      background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(255, 42, 133, 0.15));
-      color: #fff;
-      border-color: var(--accent-cyan);
+    .chrome-card-box {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.88));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 10px 30px -10px rgba(6, 182, 212, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 24px auto;
-      padding: 0 20px;
+    .neon-card-box {
+      background: linear-gradient(145deg, rgba(24, 15, 42, 0.92), rgba(45, 20, 59, 0.88));
+      border: 1px solid rgba(236, 72, 153, 0.4);
+      box-shadow: 0 10px 30px -10px rgba(236, 72, 153, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
     }
 
-    /* Top Control Grid */
-    .controls-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
-    .panel {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 18px 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-    }
-    .panel-title {
-      font-size: 0.95rem;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--accent-cyan);
-      margin: 0 0 14px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Box Inputs */
-    .box-inputs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    .input-group {
-      background: #0e121d;
-      border: 1px solid #252d44;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-    }
-    .input-group label {
-      display: block;
-      font-size: 0.76rem;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    .input-group input {
-      width: 100%;
-      background: #171d2e;
-      border: 1px solid #364060;
-      color: #fff;
-      font-size: 1.15rem;
-      font-weight: 700;
-      text-align: center;
-      padding: 6px;
-      border-radius: 6px;
-    }
-    .preset-bar {
-      margin-top: 12px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .preset-btn {
-      background: #1f273d;
-      border: 1px solid #333e5c;
-      color: #cbd5e1;
-      font-size: 0.75rem;
-      padding: 5px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .preset-btn:hover { border-color: var(--accent-cyan); color: #fff; }
-
-    /* Depletion Slider & Help Icon */
-    .depletion-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .badge-highlight {
-      background: var(--accent-neon);
-      color: #fff;
-      padding: 3px 9px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-    #monthsSlider {
-      width: 100%;
-      accent-color: var(--accent-cyan);
-      cursor: pointer;
-      margin: 8px 0;
-    }
-    .slider-ticks {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    /* Help Tooltip */
-    .help-tooltip-wrapper {
+    .refractor-sheen {
       position: relative;
-      display: inline-block;
+      overflow: hidden;
     }
-    .help-icon-btn {
-      background: var(--accent-cyan);
-      color: #0b0e17;
-      border: none;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      font-weight: 900;
-      font-size: 0.8rem;
-      cursor: pointer;
+    .refractor-sheen::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: rotate(25deg);
+      pointer-events: none;
+    }
+
+    /* Help Popover */
+    .help-wrapper {
+      position: relative;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
     }
     .help-popover {
       visibility: hidden;
       opacity: 0;
-      width: 330px;
-      background: #0d111a;
-      border: 1px solid var(--accent-cyan);
-      border-radius: 10px;
-      padding: 14px;
+      width: 340px;
       position: absolute;
       right: 0;
-      top: 30px;
-      z-index: 200;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75);
-      transition: opacity 0.2s ease;
-      font-size: 0.8rem;
-      line-height: 1.45;
-      color: #d1d9e6;
-      text-transform: none;
-      letter-spacing: normal;
-      font-weight: normal;
+      top: 32px;
+      z-index: 100;
+      transition: all 0.2s ease;
+      transform: translateY(4px);
     }
-    .help-popover h4 {
-      margin: 0 0 6px 0;
-      color: var(--accent-cyan);
-      font-size: 0.9rem;
-    }
-    .help-popover p { margin: 0 0 8px 0; }
-    .popover-stats {
-      display: flex;
-      justify-content: space-between;
-      background: #171e30;
-      padding: 8px 10px;
-      border-radius: 6px;
-      margin-top: 8px;
-      font-size: 0.76rem;
-      border: 1px solid #283452;
-    }
-    .help-tooltip-wrapper:hover .help-popover,
-    .help-icon-btn:focus + .help-popover {
+    .help-wrapper:hover .help-popover,
+    .help-wrapper:focus-within .help-popover {
       visibility: visible;
       opacity: 1;
+      transform: translateY(0);
     }
 
-    /* Summary Banner */
-    .summary-strip {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-      margin-bottom: 24px;
-    }
-    .stat-card {
-      background: linear-gradient(145deg, #171d2f, #111624);
-      border: 1px solid var(--card-border);
-      border-left: 4px solid var(--accent-cyan);
-      border-radius: 10px;
-      padding: 12px 16px;
-    }
-    .stat-card.neon { border-left-color: var(--accent-neon); }
-    .stat-card.gold { border-left-color: var(--accent-gold); }
-    .stat-label { font-size: 0.76rem; color: var(--text-muted); text-transform: uppercase; }
-    .stat-value { font-size: 1.45rem; font-weight: 800; color: #fff; margin-top: 2px; }
-    .stat-sub { font-size: 0.74rem; color: #94a3b8; }
-
-    /* Filter Bar */
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      background: var(--card-bg);
-      padding: 12px 18px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-    }
-    .filter-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .filter-group select, .filter-group input[type="text"] {
-      background: #0e121d;
-      color: #fff;
-      border: 1px solid #364060;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 0.88rem;
-    }
-
-    /* Character Table */
-    .table-wrapper {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-    th {
-      background: #101420;
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      padding: 13px 16px;
-      border-bottom: 1px solid var(--card-border);
-    }
-    td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #1f263b;
-      font-size: 0.92rem;
-    }
-    tr.char-row { cursor: pointer; transition: background 0.15s; }
-    tr.char-row:hover { background: rgba(0, 229, 255, 0.07); }
-    .char-name { font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
-    .char-tag {
-      font-size: 0.7rem;
-      padding: 2px 7px;
-      border-radius: 4px;
-      background: #232c44;
-      color: #93c5fd;
-      font-weight: 600;
-    }
-    .prob-pill {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.86rem;
-    }
-    .prob-high { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
-    .prob-mid { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
-    .prob-low { background: rgba(239, 68, 68, 0.18); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
-
-    /* Modal Pop-out */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(5, 7, 12, 0.82);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 500;
-      padding: 20px;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: #141927;
-      border: 1px solid var(--accent-cyan);
-      border-radius: 14px;
-      max-width: 680px;
-      width: 100%;
-      padding: 22px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--card-border);
-      padding-bottom: 12px;
-      margin-bottom: 16px;
-    }
-    .close-btn {
-      background: transparent;
-      border: 1px solid #475569;
-      color: #fff;
-      border-radius: 6px;
-      padding: 4px 10px;
-      cursor: pointer;
-    }
-
-    /* Formulas Page */
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-    .formula-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 22px;
-      margin-bottom: 20px;
-    }
-    .formula-card h2 { margin-top: 0; color: var(--accent-cyan); font-size: 1.2rem; }
-    .formula-card h3 { color: var(--accent-gold); font-size: 1rem; margin-top: 18px; }
-    pre {
-      background: #0b0e17;
-      border: 1px solid #26304a;
-      padding: 12px 16px;
-      border-radius: 8px;
-      overflow-x: auto;
-      color: #38bdf8;
-      font-size: 0.88rem;
-    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
   </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
 
-  <header>
-    <div class="brand-title">
-      <span class="brand-badge">2026 Chrome + Neon</span>
-      <h1>Topps Marvel Pull Odds & Depletion Calculator</h1>
-    </div>
-    <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('calcView', this)">Break Calculator</button>
-      <button class="tab-btn" onclick="switchTab('formulaView', this)">Formulas & Depletion Math</button>
+  <!-- TOP HEADER & SET GRAPHICS -->
+  <header class="border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <!-- SVG Emblem -->
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-amber-400 p-0.5 shadow-lg shadow-fuchsia-500/20 flex-shrink-0">
+          <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+            <svg class="w-7 h-7 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#starGrad)" stroke="currentColor"/>
+              <defs>
+                <linearGradient id="starGrad" x1="0" y1="0" x2="24" y2="24">
+                  <stop offset="0%" stop-color="#22d3ee" />
+                  <stop offset="50%" stop-color="#e879f9" />
+                  <stop offset="100%" stop-color="#fbbf24" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">2026 Topps Chrome</span>
+            <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30">2026 Marvel Neon</span>
+          </div>
+          <h1 class="font-display text-lg sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-200 to-fuchsia-300 bg-clip-text text-transparent mt-0.5">
+            MARVEL BREAK HIT PROBABILITY CALCULATOR
+          </h1>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="flex items-center gap-2 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800">
+        <button id="tabCalcBtn" onclick="switchView('calculator')" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md">
+          Break Hit Calculator
+        </button>
+        <button id="tabMathBtn" onclick="switchView('formulas')" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition-all">
+          Formulas &amp; Odds Math
+        </button>
+      </div>
     </div>
   </header>
 
-  <div class="container">
-    <!-- VIEW 1: BREAK CALCULATOR -->
-    <div id="calcView" class="view-section active">
-      <div class="controls-grid">
-        <!-- Box Quantities -->
-        <div class="panel">
-          <div class="panel-title">
-            <span>1. Box Quantities in Break</span>
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex-1">
+
+    <!-- ==================== VIEW 1: BREAK HIT CALCULATOR ==================== -->
+    <section id="viewCalculator" class="space-y-6">
+
+      <!-- BOX INPUT CARDS (CHROME VS NEON) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- 2026 TOPPS CHROME MARVEL BOXES -->
+        <div class="chrome-card-box refractor-sheen rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_10px_#22d3ee]"></span>
+              <h2 class="font-display text-sm sm:text-base font-bold tracking-wider text-cyan-300 uppercase">
+                2026 Topps Chrome Marvel Boxes
+              </h2>
+            </div>
+            <span class="text-xs text-slate-400 font-medium">200-Card Base + 12 Insert Sets</span>
           </div>
-          <div class="box-inputs">
-            <div class="input-group">
-              <label for="chromeVal">Chrome Value</label>
-              <input type="number" id="chromeVal" min="0" max="500" value="60" oninput="recalculateAllOdds()">
+
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-slate-950/70 border border-cyan-500/25 rounded-xl p-3 text-center">
+              <label for="chromeValue" class="block text-xs font-bold text-cyan-200 uppercase">Value / Blaster</label>
+              <span class="block text-[10px] text-slate-400 mb-2">8 Packs • ~0.48 #’d/Box</span>
+              <input id="chromeValue" type="number" min="0" max="999" value="60" oninput="updateCalculator()"
+                class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-lg py-2 text-center text-lg font-extrabold text-white outline-none transition" />
             </div>
-            <div class="input-group">
-              <label for="chromeMega">Chrome Mega</label>
-              <input type="number" id="chromeMega" min="0" max="500" value="10" oninput="recalculateAllOdds()">
+            <div class="bg-slate-950/70 border border-cyan-500/25 rounded-xl p-3 text-center">
+              <label for="chromeMega" class="block text-xs font-bold text-cyan-200 uppercase">Mega Box</label>
+              <span class="block text-[10px] text-slate-400 mb-2">8 Packs • ~1.05 #’d/Box</span>
+              <input id="chromeMega" type="number" min="0" max="999" value="0" oninput="updateCalculator()"
+                class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-lg py-2 text-center text-lg font-extrabold text-white outline-none transition" />
             </div>
-            <div class="input-group">
-              <label for="neonHobby">Neon Hobby</label>
-              <input type="number" id="neonHobby" min="0" max="500" value="12" oninput="recalculateAllOdds()">
+            <div class="bg-slate-950/70 border border-cyan-500/25 rounded-xl p-3 text-center">
+              <label for="chromeHobby" class="block text-xs font-bold text-cyan-200 uppercase">Hobby Box</label>
+              <span class="block text-[10px] text-slate-400 mb-2">12 Packs • ~2.25 #’d/Box</span>
+              <input id="chromeHobby" type="number" min="0" max="999" value="0" oninput="updateCalculator()"
+                class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-lg py-2 text-center text-lg font-extrabold text-white outline-none transition" />
             </div>
-          </div>
-          <div class="preset-bar">
-            <button class="preset-btn" onclick="setPreset(60, 10, 12)">82-Box Monster Break (60V / 10M / 12N)</button>
-            <button class="preset-btn" onclick="setPreset(40, 0, 0)">40-Box Blaster Case</button>
-            <button class="preset-btn" onclick="setPreset(0, 0, 12)">12-Box Neon Case</button>
           </div>
         </div>
 
-        <!-- Market Depletion Filter -->
-        <div class="panel">
-          <div class="panel-title">
-            <span>2. Market Age / Loose-Box Depletion</span>
-            <div class="help-tooltip-wrapper">
-              <button type="button" class="help-icon-btn" aria-label="Explain Market Depletion">?</button>
-              <div class="help-popover">
-                <h4>How Market Age Affects Your Odds</h4>
-                <p><strong>Factory Sealed Cases:</strong> Keep at <strong>0 Months</strong> if ripping sealed master cases. Day 1 pack odds are locked in.</p>
-                <p><strong>Loose-Box Adverse Selection:</strong> Months after release, ~75%+ of supply is opened. While /99 and /199 cards deplete evenly with boxes, 1/1 Superfractors and /5s suffer from <em>"Dead-Case Dumping"</em>—where sellers stop ripping a case after hitting the case grail and sell off the remaining loose boxes.</p>
-                <div class="popover-stats">
-                  <span>Est. Global Ripped: <strong id="popDepletion">0%</strong></span>
-                  <span>1/1 Loose Survival: <strong id="popGrailFactor">100.0%</strong></span>
+        <!-- 2026 TOPPS MARVEL NEON BOXES -->
+        <div class="neon-card-box refractor-sheen rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full bg-fuchsia-400 shadow-[0_0_10px_#e879f9]"></span>
+              <h2 class="font-display text-sm sm:text-base font-bold tracking-wider text-fuchsia-300 uppercase">
+                2026 Topps Marvel Neon Boxes
+              </h2>
+            </div>
+            <span class="text-xs text-slate-400 font-medium">Base + Chrome Etch + Neon Inserts</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-slate-950/70 border border-fuchsia-500/25 rounded-xl p-3 text-center">
+              <label for="neonValue" class="block text-xs font-bold text-fuchsia-200 uppercase">Value / Blaster</label>
+              <span class="block text-[10px] text-slate-400 mb-2">7 Packs • ~0.40 #’d/Box</span>
+              <input id="neonValue" type="number" min="0" max="999" value="0" oninput="updateCalculator()"
+                class="w-full bg-slate-900 border border-slate-700 focus:border-fuchsia-400 rounded-lg py-2 text-center text-lg font-extrabold text-white outline-none transition" />
+            </div>
+            <div class="bg-slate-950/70 border border-fuchsia-500/25 rounded-xl p-3 text-center">
+              <label for="neonMega" class="block text-xs font-bold text-fuchsia-200 uppercase">Neon Mega Box</label>
+              <span class="block text-[10px] text-slate-400 mb-2">10 Packs • ~1.05 #’d/Box</span>
+              <input id="neonMega" type="number" min="0" max="999" value="10" oninput="updateCalculator()"
+                class="w-full bg-slate-900 border border-slate-700 focus:border-fuchsia-400 rounded-lg py-2 text-center text-lg font-extrabold text-white outline-none transition" />
+            </div>
+            <div class="bg-slate-950/70 border border-fuchsia-500/25 rounded-xl p-3 text-center">
+              <label for="neonHobby" class="block text-xs font-bold text-fuchsia-200 uppercase">Neon Hobby Box</label>
+              <span class="block text-[10px] text-slate-400 mb-2">20 Packs • ~2.00 #’d/Box</span>
+              <input id="neonHobby" type="number" min="0" max="999" value="12" oninput="updateCalculator()"
+                class="w-full bg-slate-900 border border-slate-700 focus:border-fuchsia-400 rounded-lg py-2 text-center text-lg font-extrabold text-white outline-none transition" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK PRESETS & SUMMARY KPI STRIP -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800/80">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1">Quick Presets:</span>
+            <button onclick="applyPreset(60,0,0,0,10,12)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/25 transition">
+              82-Box Monster Break (60 CV / 10 NM / 12 NH)
+            </button>
+            <button onclick="applyPreset(0,0,8,0,0,0)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+              Chrome Hobby Case (8)
+            </button>
+            <button onclick="applyPreset(40,0,0,0,0,0)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+              Chrome Value Case (40)
+            </button>
+            <button onclick="applyPreset(0,0,0,0,0,12)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+              Neon Hobby Case (12)
+            </button>
+            <button onclick="applyPreset(0,0,0,0,0,0)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 hover:bg-rose-500/25 transition">
+              Clear All
+            </button>
+          </div>
+          <div class="text-xs text-slate-400">
+            Click any character row below to inspect its full <span class="text-cyan-300 font-semibold">Individual Parallel Rainbow</span>
+          </div>
+        </div>
+
+        <!-- 5 KPI Summary Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3">
+            <div class="text-[11px] font-semibold text-slate-400 uppercase">Total Boxes / Packs</div>
+            <div id="kpiBoxesPacks" class="text-xl font-extrabold text-white mt-0.5">82 Boxes</div>
+            <div id="kpiPacksSub" class="text-[11px] text-cyan-400">820 Total Packs</div>
+          </div>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3">
+            <div class="text-[11px] font-semibold text-slate-400 uppercase">Expected Total #’d Hits</div>
+            <div id="kpiTotalNumbered" class="text-xl font-extrabold text-fuchsia-400 mt-0.5">63.3 Hits</div>
+            <div id="kpiNumberedRange" class="text-[11px] text-slate-400">Est. Range: 61 – 65 #’d</div>
+          </div>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3">
+            <div class="text-[11px] font-semibold text-slate-400 uppercase">Expected #’d ≤ /50</div>
+            <div id="kpiLowNumbered" class="text-xl font-extrabold text-amber-400 mt-0.5">18.2 Hits</div>
+            <div id="kpiLowSub" class="text-[11px] text-slate-400">Gold /50 down to 1/1</div>
+          </div>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3">
+            <div class="text-[11px] font-semibold text-slate-400 uppercase">Any 1/1 Super / FoilFractor</div>
+            <div id="kpiOneOfOne" class="text-xl font-extrabold text-emerald-400 mt-0.5">27.4%</div>
+            <div id="kpiOneOfOneSub" class="text-[11px] text-slate-400">Across All Sets &amp; Inserts</div>
+          </div>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3 col-span-2 sm:col-span-1">
+            <div class="text-[11px] font-semibold text-slate-400 uppercase">Active Filter Cap</div>
+            <div id="kpiFilterCap" class="text-lg font-extrabold text-cyan-300 mt-0.5">All Parallels</div>
+            <div id="kpiDepletionState" class="text-[11px] text-fuchsia-300">Day 1 Fresh (0m)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER BAR + NEW MARKET AGE / DEPLETION SLIDER -->
+      <div class="bg-slate-900/95 border border-slate-800 rounded-2xl p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+        
+        <!-- Character Search (3 cols) -->
+        <div class="md:col-span-3">
+          <label for="charSearchInput" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+            Search 200 Characters
+          </label>
+          <input id="charSearchInput" type="text" placeholder="e.g. Spider-Man, Hulk, Moon Girl..." oninput="updateCalculator()"
+            class="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none" />
+        </div>
+
+        <!-- Highest-Numbered Filter (3 cols) -->
+        <div class="md:col-span-3">
+          <label for="maxSerialFilter" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+            Highest-Numbered Filter
+          </label>
+          <select id="maxSerialFilter" onchange="updateCalculator()"
+            class="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-lg px-3 py-2 text-sm font-semibold text-white outline-none">
+            <option value="9999" selected>All (Base + Inserts + All #’d)</option>
+            <option value="399">All Serial #’d Only (≤ /399)</option>
+            <option value="199">Numbered ≤ /199 or less</option>
+            <option value="150">Numbered ≤ /150 or less</option>
+            <option value="99">Numbered ≤ /99 or less</option>
+            <option value="75">Numbered ≤ /75 or less</option>
+            <option value="50">Numbered ≤ /50 or less</option>
+            <option value="25">Numbered ≤ /25 or less</option>
+            <option value="10">Numbered ≤ /10 or less</option>
+            <option value="5">Numbered ≤ /5 or less</option>
+            <option value="1">1/1 SuperFractor / FoilFractor Only</option>
+          </select>
+        </div>
+
+        <!-- Sort Order (2 cols) -->
+        <div class="md:col-span-2">
+          <label for="sortOrderSelect" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+            Sort Checklist
+          </label>
+          <select id="sortOrderSelect" onchange="updateCalculator()"
+            class="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-lg px-3 py-2 text-sm font-semibold text-white outline-none">
+            <option value="number">Card # (1–200)</option>
+            <option value="probDesc">Highest Hit %</option>
+            <option value="nameAsc">Character (A–Z)</option>
+          </select>
+        </div>
+
+        <!-- NEW: Market Age / Depletion Slider + Help Icon (4 cols) -->
+        <div class="md:col-span-4 bg-slate-950/90 border border-slate-800 rounded-xl p-3">
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-1.5">
+              <label for="depletionSlider" class="text-xs font-bold uppercase tracking-wider text-cyan-300">
+                Market Age / Depletion
+              </label>
+              <span id="depletionBadge" class="px-2 py-0.5 text-[10px] font-extrabold rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30">
+                0m (Day 1)
+              </span>
+            </div>
+
+            <!-- Little Help Icon (?) with Popover -->
+            <div class="help-wrapper">
+              <button type="button" aria-label="Market Depletion Help"
+                class="w-5 h-5 rounded-full bg-cyan-400 text-slate-950 font-black text-xs flex items-center justify-center hover:bg-cyan-300 focus:outline-none">
+                ?
+              </button>
+              <div class="help-popover bg-slate-950 border border-cyan-400/80 rounded-xl p-3.5 shadow-2xl text-xs text-slate-200 leading-relaxed">
+                <div class="font-bold text-cyan-300 text-sm mb-1">Market Age &amp; Loose-Box Depletion</div>
+                <p class="mb-2">
+                  <strong>Sealed Cases (Keep at 0m):</strong> Factory-sealed cases retain 100% of their Day 1 pack odds.
+                </p>
+                <p class="mb-2">
+                  <strong>Loose Boxes Post-Release:</strong> Months after release, most global wax is ripped. Standard parallels (/99–/399) deplete evenly with boxes, but ultra-rare grails (<strong>1/1, /5, /10</strong>) suffer from <em>Dead-Case Dumping</em>—where sellers stop opening a case once the big case hit is pulled and sell the remaining loose boxes.
+                </p>
+                <div class="grid grid-cols-2 gap-2 bg-slate-900 p-2 rounded-lg border border-slate-800 text-[11px]">
+                  <div>Est. Global Ripped: <span id="helpRippedPct" class="font-bold text-fuchsia-400">0%</span></div>
+                  <div>1/1 Loose Survival: <span id="helpGrailSurvival" class="font-bold text-emerald-400">100%</span></div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="depletion-header">
-            <span style="font-size: 0.85rem; color: var(--text-muted);">Current Market State:</span>
-            <span id="monthsLabel" class="badge-highlight">0 Months (Day 1 Fresh)</span>
-          </div>
-
-          <input type="range" id="monthsSlider" min="0" max="12" step="1" value="0" oninput="updateDepletionModel(this.value)">
-          <div class="slider-ticks">
-            <span>0m (Day 1)</span>
+          <input id="depletionSlider" type="range" min="0" max="12" step="1" value="0" oninput="onDepletionChange(this.value)"
+            class="w-full accent-cyan-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg" />
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+            <span>0m (Fresh)</span>
             <span>3m (~65% Ripped)</span>
             <span>6m (~88% Ripped)</span>
             <span>12m (Mature)</span>
@@ -488,332 +355,699 @@
         </div>
       </div>
 
-      <!-- Summary Metrics -->
-      <div class="summary-strip">
-        <div class="stat-card">
-          <div class="stat-label">Total Boxes Selected</div>
-          <div class="stat-value" id="statTotalBoxes">82</div>
-          <div class="stat-sub" id="statBoxSplit">60 Value • 10 Mega • 12 Neon</div>
-        </div>
-        <div class="stat-card neon">
-          <div class="stat-label">Expected Serial #d Hits</div>
-          <div class="stat-value" id="statExpectedNumbered">63.2</div>
-          <div class="stat-sub">Range: ~61 to 65 numbered cards</div>
-        </div>
-        <div class="stat-card gold">
-          <div class="stat-label">Expected Low #d (≤ /50)</div>
-          <div class="stat-value" id="statExpectedLow">18.4</div>
-          <div class="stat-sub">Adjusted for Market Depletion</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Any 1/1 Superfractor Odds</div>
-          <div class="stat-value" id="statSuperOdds">26.8%</div>
-          <div class="stat-sub" id="statSuperSub">Day 1 Baseline Probability</div>
+      <!-- 200-CHARACTER PROBABILITY TABLE -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto max-h-[680px]">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-950 sticky top-0 z-20 border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <tr>
+                <th class="py-3.5 px-4"># / Character</th>
+                <th class="py-3.5 px-3">Active Insert Sets</th>
+                <th class="py-3.5 px-3 text-right text-cyan-300" title="2026 Topps Chrome Base Set">Chrome Base %</th>
+                <th class="py-3.5 px-3 text-right text-cyan-200" title="2026 Topps Chrome Inserts">Chrome Inserts %</th>
+                <th class="py-3.5 px-3 text-right text-fuchsia-300" title="2026 Topps Neon Base & Chrome Etch">Neon Base+Etch %</th>
+                <th class="py-3.5 px-3 text-right text-fuchsia-200" title="2026 Topps Neon Inserts">Neon Inserts %</th>
+                <th id="thCombinedNumbered" class="py-3.5 px-3 text-right text-amber-300">Combined Any #’d %</th>
+                <th class="py-3.5 px-4 text-center">Rainbow</th>
+              </tr>
+            </thead>
+            <tbody id="characterTableBody" class="divide-y divide-slate-800/70 text-sm"></tbody>
+          </table>
         </div>
       </div>
+    </section>
 
-      <!-- Filter Bar -->
-      <div class="filter-bar">
-        <div class="filter-group">
-          <label for="serialCapSelect"><strong>Max Serial Number Filter:</strong></label>
-          <select id="serialCapSelect" onchange="recalculateAllOdds()">
-            <option value="999" selected>All Numbered Parallels (≤ /199)</option>
-            <option value="100">Numbered ≤ /99 or less</option>
-            <option value="50">Numbered ≤ /50 or less</option>
-            <option value="25">Numbered ≤ /25 or less</option>
-            <option value="10">Numbered ≤ /10 or less</option>
-            <option value="5">Numbered ≤ /5 or less</option>
-            <option value="1">1/1 Superfractors Only</option>
-          </select>
+    <!-- ==================== VIEW 2: FORMULAS & ODDS MATH ==================== -->
+    <section id="viewFormulas" class="hidden space-y-6">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-6">
+        <div class="border-b border-slate-800 pb-4">
+          <h2 class="font-display text-xl font-bold text-cyan-300">
+            MATHEMATICAL MODEL, PACK ODDS &amp; MARKET DEPLETION FORMULAS
+          </h2>
+          <p class="text-sm text-slate-400 mt-1">
+            Exact binomial probability equations and post-release market aging adjustments powering the 2026 Topps Marvel Chrome &amp; Neon calculator.
+          </p>
         </div>
-        <div class="filter-group">
-          <input type="text" id="charSearch" placeholder="Search character (e.g. Spider-Man, Hulk)..." oninput="recalculateAllOdds()">
+
+        <!-- 1. Binomial Complement Equation -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-5 space-y-3">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span class="w-6 h-6 rounded bg-cyan-500/20 text-cyan-300 text-xs flex items-center justify-center font-extrabold">1</span>
+            Binomial Complement Hit Probability Formula
+          </h3>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            For any character and parallel tier where the single-pack probability of pulling that specific card is <code class="text-cyan-300">p</code>, the probability of pulling <strong>at least one</strong> copy across <code class="text-cyan-300">N</code> packs is calculated using the binomial complement:
+          </p>
+          <pre class="bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs sm:text-sm text-cyan-300 overflow-x-auto">P(At Least 1 Hit) = 1 - [ (1 - p_chrome_val)^N_cv × (1 - p_chrome_mega)^N_cm × (1 - p_chrome_hob)^N_ch × (1 - p_neon_val)^N_nv × (1 - p_neon_mega)^N_nm × (1 - p_neon_hob)^N_nh ]</pre>
+          <p class="text-xs text-slate-400">
+            Where <code class="text-slate-200">p = 1 / (Pack_Odds × Checklist_Size)</code>. For example, on a 200-card base checklist, a parallel with 1:30 pack odds has a single-character per-pack probability of <code class="text-slate-200">1 / (30 × 200) = 1 / 6,000</code>.
+          </p>
+        </div>
+
+        <!-- 2. Box Configurations & Expected Numbered Yields -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-5 space-y-3">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span class="w-6 h-6 rounded bg-fuchsia-500/20 text-fuchsia-300 text-xs flex items-center justify-center font-extrabold">2</span>
+            2026 Box Formats &amp; Expected Serial-Numbered Yields
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div class="bg-slate-900/90 border border-cyan-500/20 rounded-lg p-4">
+              <div class="font-bold text-cyan-300 mb-2">2026 Topps Chrome Marvel (200 Base + Inserts)</div>
+              <ul class="space-y-1.5 text-xs text-slate-300">
+                <li>• <strong>Value / Blaster Box (8 Packs, 4 Cards/Pack):</strong> ~0.48 serial-numbered cards per box (Spider-Web /399, Pink /250, Aqua /199, Blue /150, Green RayWave /99, Purple /75, Gold /50, Cap Star /41, Human Torch /39, Orange /25, Black /10, Red /5, SuperFractor 1/1).</li>
+                <li>• <strong>Mega Box (8 Packs, 7 Cards/Pack):</strong> ~1.05 serial-numbered cards per box (includes Mega-exclusive Green /99, Purple /75, Gold /50, Orange /25, Black /10, Red /5 X-Fractors).</li>
+                <li>• <strong>Hobby Box (12 Packs, 6 Cards/Pack):</strong> ~2.25 serial-numbered cards per box (includes Hobby-exclusive Storm's Lightning numbered parallels, Clawed Chrome Variations /20, and Hobby-only inserts).</li>
+              </ul>
+            </div>
+            <div class="bg-slate-900/90 border border-fuchsia-500/20 rounded-lg p-4">
+              <div class="font-bold text-fuchsia-300 mb-2">2026 Topps Marvel Neon (Base + Chrome Etch + Inserts)</div>
+              <ul class="space-y-1.5 text-xs text-slate-300">
+                <li>• <strong>Neon Value / Blaster Box (7 Packs, 5 Cards/Pack):</strong> ~0.40 serial-numbered parallels per box (Yellow Foil /275, Blue Neon /150, Green /99, Jubilee Fireworks /89, Guardians Galaxy /69, Gold /50, Iron Man /39, Orange /25, Black /10, Red /5, FoilFractor 1/1).</li>
+                <li>• <strong>Neon Mega Box (10 Packs, 5 Cards/Pack):</strong> ~1.05 serial-numbered cards per box across Base, Chrome Neon Etch, and Neon Inserts.</li>
+                <li>• <strong>Neon Hobby Box (20 Packs, 5 Cards/Pack):</strong> ~2.00 serial-numbered cards per box plus elevated odds for Marvel Murals, Neon Tarots, Manga Madness, and Marquee Motion.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Post-Release Market Depletion & Loose-Box Bias Model -->
+        <div class="bg-slate-950/80 border border-amber-500/30 rounded-xl p-5 space-y-3">
+          <h3 class="text-base font-bold text-amber-300 flex items-center gap-2">
+            <span class="w-6 h-6 rounded bg-amber-500/20 text-amber-300 text-xs flex items-center justify-center font-extrabold">3</span>
+            Post-Release Market Age &amp; Loose-Box Depletion Model (Slider Math)
+          </h3>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Static odds assume a <strong>Day 1 untouched print run</strong> where 100% of boxes remain sealed. Months after release, opening velocity and secondary-market seller behavior alter the effective odds of pulling top grails from loose boxes:
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-900 p-4 rounded-lg border border-slate-800">
+              <div class="text-xs font-bold uppercase text-cyan-300 mb-1">A. Exponential Global Supply Decay</div>
+              <p class="text-xs text-slate-300 mb-2">
+                Roughly 65% to 75% of modern Chrome/Neon wax is ripped within the first 60 to 90 days. With <code class="text-cyan-300">m</code> representing months since release (<code class="text-cyan-300">λ = 0.35</code>):
+              </p>
+              <pre class="bg-slate-950 p-2 rounded text-xs text-cyan-300">Depletion(m) = 1 - e^(-0.35 × m)</pre>
+              <p class="text-[11px] text-slate-400 mt-2">
+                At Month 3: ~65.0% ripped • Month 4: ~75.3% ripped • Month 6: ~87.8% ripped.
+              </p>
+            </div>
+            <div class="bg-slate-900 p-4 rounded-lg border border-slate-800">
+              <div class="text-xs font-bold uppercase text-fuchsia-300 mb-1">B. Loose-Box Adverse Selection ("Dead-Case Bias")</div>
+              <p class="text-xs text-slate-300 mb-2">
+                High-numbered parallels (/75 to /399) deplete evenly with boxes (<code class="text-fuchsia-300">α = 0</code>). However, when a breaker or shop pulls a 1/1 SuperFractor or /5 early in a master case, the remaining "dead" boxes are often sold loose:
+              </p>
+              <pre class="bg-slate-950 p-2 rounded text-xs text-fuchsia-300">p_adjusted = p_day1 × [ 1 - (α_tier × Depletion(m)) ]</pre>
+              <p class="text-[11px] text-slate-400 mt-2">
+                Tier Bias (<code class="text-slate-200">α</code>): <strong>1/1 = 0.45</strong> • <strong>/5 = 0.28</strong> • <strong>/10 = 0.20</strong> • <strong>/25 = 0.10</strong> • <strong>/50 = 0.04</strong> • <strong>/75+ = 0.00</strong>.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- Character Table -->
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Character / Chase</th>
-              <th>Checklist Spots (Weight)</th>
-              <th>Base & Insert Pull %</th>
-              <th id="thNumberedCol">Any Numbered Card %</th>
-              <th>Numbered ≤ /50 %</th>
-              <th>Rainbow Details</th>
-            </tr>
-          </thead>
-          <tbody id="charTableBody"></tbody>
-        </table>
-      </div>
-    </div>
+  </main>
 
-    <!-- VIEW 2: FORMULAS & METHODOLOGY -->
-    <div id="formulaView" class="view-section">
-      <div class="formula-card">
-        <h2>1. Binomial & Poisson Multi-Box Hit Aggregation</h2>
-        <p>Each box format carries an independent expected yield of serial-numbered parallels based on pack ratios:</p>
-        <ul>
-          <li><strong>2026 Topps Chrome Marvel Value Box:</strong> ~0.48 serial-numbered cards per box (~1 in 2.1 boxes)</li>
-          <li><strong>2026 Topps Chrome Neon Mega Box:</strong> ~1.05 serial-numbered cards per box</li>
-          <li><strong>2026 Topps Marvel Neon Hobby Box:</strong> ~2.00 serial-numbered cards per box</li>
-        </ul>
-        <pre><code>E(Total_Numbered) = (N_val &times; 0.48) + (N_mega &times; 1.05) + (N_hobby &times; 2.00)
-P(At Least 1 Target Hit) = 1 - (1 - p_single_hit)^(E_Total_Pool)</code></pre>
+  <!-- CHARACTER RAINBOW POP-OUT MODAL -->
+  <div id="rainbowModal" onclick="if(event.target === this) closeRainbowModal()"
+    class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-cyan-500/40 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="p-5 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <!-- Mini Card Graphic -->
+          <div class="w-11 h-14 rounded-lg bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-amber-400 p-0.5 flex-shrink-0 shadow-md">
+            <div class="w-full h-full bg-slate-950 rounded-[6px] flex flex-col items-center justify-center text-[10px] font-black text-cyan-300">
+              <span id="modalCardNum">#1</span>
+              <span class="text-[8px] text-fuchsia-400">CHROME</span>
+            </div>
+          </div>
+          <div>
+            <h3 id="modalCharName" class="font-display text-lg sm:text-xl font-extrabold text-white">Spider-Man</h3>
+            <p id="modalCharSub" class="text-xs text-slate-400 mt-0.5"></p>
+          </div>
+        </div>
+        <button onclick="closeRainbowModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition">
+          ✕ Close
+        </button>
       </div>
 
-      <div class="formula-card">
-        <h2>2. Post-Release Market Depletion & Loose-Box Bias Model</h2>
-        <p>Standard hobby calculators assume a <strong>Day 1 untouched print run</strong> where 100% of cards and boxes remain sealed. However, months after release, buying loose boxes on the secondary market introduces two mathematical shifts:</p>
+      <!-- Modal Body -->
+      <div class="p-5 overflow-y-auto space-y-5">
+        <!-- Modal KPI Summary Row -->
+        <div id="modalSummaryRow" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
 
-        <h3>A. Exponential Supply Decay</h3>
-        <p>Trading card breaking velocity is heavily front-loaded during the first 60 days of release. We model the percentage of global supply opened after <em>m</em> months using an exponential decay constant (<code>&lambda; = 0.35</code>):</p>
-        <pre><code>Depletion(m) = 1 - e^(-0.35 &times; m)</code></pre>
-
-        <h3>B. Proportional Depletion vs. "Dead-Case" Selection Bias</h3>
-        <p>Under random sampling, high-numbered parallels (<strong>/75, /99, /150, /199</strong>) deplete at the exact same rate as boxes, keeping per-box odds stable. However, ultra-rare grails (<strong>1/1 Superfractors, /5 Reds, /10s</strong>) suffer from <strong>Adverse Selection</strong> on the loose secondary market when sellers stop opening a case after hitting the case chase:</p>
-        <pre><code>Adjusted_Prob(tier, m) = Day1_Prob &times; [ 1 - (&alpha;_tier &times; Depletion(m)) ]</code></pre>
-        <ul>
-          <li><strong>1/1 Superfractors (<code>&alpha; = 0.45</code>):</strong> Up to a 45% penalty in loose secondary-market boxes at full maturity.</li>
-          <li><strong>/5 to /10 Parallels (<code>&alpha; = 0.20 - 0.25</code>):</strong> Moderate loose-box survival reduction.</li>
-          <li><strong>/50 to /199 Parallels (<code>&alpha; = 0.00</code>):</strong> Unaffected by case-stopping bias; odds match Day 1 pack ratios.</li>
-        </ul>
+        <!-- Individual Rainbow Table -->
+        <div class="border border-slate-800 rounded-xl overflow-hidden">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead class="bg-slate-950 text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="py-2.5 px-3">Set / Category</th>
+                <th class="py-2.5 px-3">Parallel Name</th>
+                <th class="py-2.5 px-3">Serial #</th>
+                <th class="py-2.5 px-3 text-right">Day 1 Odds</th>
+                <th class="py-2.5 px-3 text-right text-cyan-300">Adjusted Pull %</th>
+              </tr>
+            </thead>
+            <tbody id="modalRainbowBody" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Character Rainbow Modal -->
-  <div id="charModal" class="modal-overlay" onclick="if(event.target===this) closeModal()">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div>
-          <h3 id="modalTitle" style="margin:0; font-size:1.25rem; color:var(--accent-cyan);">Character Rainbow Breakdown</h3>
-          <span id="modalSubtitle" style="font-size:0.8rem; color:var(--text-muted);">Individual Parallel Pull Probabilities</span>
-        </div>
-        <button class="close-btn" onclick="closeModal()">✕ Close</button>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Parallel Tier</th>
-            <th>Serial Cap</th>
-            <th>Day 1 Odds</th>
-            <th>Depletion-Adjusted Odds</th>
-          </tr>
-        </thead>
-        <tbody id="modalTableBody"></tbody>
-      </table>
-    </div>
-  </div>
-
+  <!-- JAVASCRIPT ENGINE & 200-CHARACTER DATABASE -->
   <script>
-    const DECAY_RATE = 0.35;
-    const BIAS_FACTORS = { 1: 0.45, 5: 0.25, 10: 0.20, 25: 0.10, 50: 0.03, 999: 0.00 };
-    let currentDepletionMonths = 0;
+    // Pack counts per box format
+    const BOX_PACKS = {
+      chromeValue: 8,
+      chromeMega: 8,
+      chromeHobby: 12,
+      neonValue: 7,
+      neonMega: 10,
+      neonHobby: 20
+    };
 
-    // Parallel Rainbow Structure (Share of Total Numbered Print Run)
-    const PARALLEL_TIERS = [
-      { name: "Green / Blue / Purple Refractor", cap: 199, share: 0.395 },
-      { name: "Aqua / Pink / Neon Refractor", cap: 99, share: 0.320 },
-      { name: "Gold / Orange / Yellow Wave", cap: 50, share: 0.165 },
-      { name: "Orange / Neon Pulsar /25", cap: 25, share: 0.075 },
-      { name: "Black / Red /10", cap: 10, share: 0.028 },
-      { name: "Red Refractor /5", cap: 5, share: 0.013 },
-      { name: "Superfractor / Neon 1-of-1", cap: 1, share: 0.004 }
-    ];
+    // Market Depletion Parameters
+    const DECAY_LAMBDA = 0.35;
+    let depletionMonths = 0;
 
-    // Character Checklist Database (Weight reflects multi-card & insert presence)
-    const CHARACTERS = [
-      { name: "Spider-Man", tag: "Headliner + Inserts", weight: 1.48 },
-      { name: "Hulk & Infernal Hulk", tag: "Dual Checklist", weight: 1.24 },
-      { name: "Wolverine", tag: "Headliner + Inserts", weight: 1.35 },
-      { name: "Daredevil", tag: "Core + Inserts", weight: 1.05 },
-      { name: "Thor", tag: "Core + Inserts", weight: 1.05 },
-      { name: "Moon Knight", tag: "Core + Inserts", weight: 1.00 },
-      { name: "Scarlet Witch", tag: "Core + Inserts", weight: 1.00 },
-      { name: "Ghost-Spider", tag: "Core + Inserts", weight: 0.98 },
-      { name: "Moon Girl & Devil Dinosaur", tag: "Duo Chase", weight: 0.92 },
-      { name: "Iron Man", tag: "Core + Inserts", weight: 1.10 },
-      { name: "Captain America", tag: "Core + Inserts", weight: 1.05 },
-      { name: "Doctor Doom", tag: "Villain Spotlight", weight: 0.95 },
-      { name: "Nova", tag: "Cosmic Core", weight: 0.78 },
-      { name: "Captain Britain", tag: "UK Chase", weight: 0.76 },
-      { name: "Tigra", tag: "Avengers Core", weight: 0.72 },
-      { name: "Hellcat", tag: "Defenders Core", weight: 0.70 },
-      { name: "Black Knight", tag: "Core Checklist", weight: 0.70 },
-      { name: "Goblin Queen", tag: "X-Men Chase", weight: 0.75 },
-      { name: "Jack of Hearts", tag: "Core Checklist", weight: 0.65 },
-      { name: "Ka-Zar", tag: "Savage Land", weight: 0.65 },
-      { name: "Machine Man", tag: "Core Checklist", weight: 0.65 }
-    ];
-
-    function getDepletionPercentage(months) {
-      if (months <= 0) return 0;
-      return 1 - Math.exp(-DECAY_RATE * months);
+    function getGlobalDepletion(m) {
+      if (m <= 0) return 0;
+      return 1 - Math.exp(-DECAY_LAMBDA * m);
     }
 
-    function getTierMultiplier(serialCap, months) {
-      const depletion = getDepletionPercentage(months);
+    function getLooseBoxBiasMultiplier(serial, m) {
+      if (!serial || serial > 50 || m <= 0) return 1.0;
+      const d = getGlobalDepletion(m);
       let alpha = 0;
-      if (serialCap === 1) alpha = BIAS_FACTORS[1];
-      else if (serialCap <= 5) alpha = BIAS_FACTORS[5];
-      else if (serialCap <= 10) alpha = BIAS_FACTORS[10];
-      else if (serialCap <= 25) alpha = BIAS_FACTORS[25];
-      else if (serialCap <= 50) alpha = BIAS_FACTORS[50];
-      return 1 - (alpha * depletion);
+      if (serial === 1) alpha = 0.45;
+      else if (serial <= 5) alpha = 0.28;
+      else if (serial <= 10) alpha = 0.20;
+      else if (serial <= 25) alpha = 0.10;
+      else if (serial <= 50) alpha = 0.04;
+      return 1 - (alpha * d);
     }
 
-    function updateDepletionModel(months) {
-      currentDepletionMonths = parseInt(months, 10);
-      const depletionPct = (getDepletionPercentage(currentDepletionMonths) * 100).toFixed(0);
-      const grailSurvival = (getTierMultiplier(1, currentDepletionMonths) * 100).toFixed(1);
+    // 2026 Topps Chrome Marvel Base Parallels (200-card checklist)
+    // Odds are pack odds (1:X packs) for Value, Mega, Hobby
+    const CHROME_BASE_PARALLELS = [
+      { name: "Base Card", serial: null, color: "bg-slate-700 text-slate-200", v: 0.28, m: 0.18, h: 0.20 },
+      { name: "Refractor", serial: null, color: "bg-slate-600 text-white", v: 4, m: 4, h: 2 },
+      { name: "RayWave / X-Fractor / Lightning", serial: null, color: "bg-cyan-900/60 text-cyan-200", v: 4, m: 4, h: 3 },
+      { name: "Spider-Web Refractor /399", serial: 399, color: "bg-sky-900/70 text-sky-200", v: 107, m: 67, h: 19 },
+      { name: "Pink Refractor /250", serial: 250, color: "bg-pink-900/70 text-pink-200", v: 170, m: 106, h: 30 },
+      { name: "Aqua Refractor /199", serial: 199, color: "bg-cyan-800/80 text-cyan-100", v: 215, m: 134, h: 38 },
+      { name: "Blue Refractor /150", serial: 150, color: "bg-blue-900/80 text-blue-100", v: 283, m: 177, h: 50 },
+      { name: "Green / Hulk Lazer / X-Fractor /99", serial: 99, color: "bg-emerald-900/80 text-emerald-100", v: 115, m: 38, h: 24 },
+      { name: "Dazzler Silver Rhythm /80", serial: 80, color: "bg-slate-500 text-white", v: 531, m: 331, h: 93 },
+      { name: "Purple Shimmer / RayWave / X-Fractor /75", serial: 75, color: "bg-purple-900/80 text-purple-100", v: 150, m: 65, h: 38 },
+      { name: "Spider-Man Red & Blue /62", serial: 62, color: "bg-indigo-900/80 text-indigo-100", v: 685, m: 428, h: 120 },
+      { name: "Gold Refractor / Wave / X-Fractor /50", serial: 50, color: "bg-amber-700/80 text-amber-100", v: 424, m: 68, h: 42 },
+      { name: "Captain America's Star /41", serial: 41, color: "bg-blue-800 text-amber-200", v: 1035, m: 646, h: 180 },
+      { name: "Human Torch Flame /39", serial: 39, color: "bg-orange-800/80 text-orange-100", v: 1088, m: 679, h: 190 },
+      { name: "Orange Refractor / Wave / X-Fractor /25", serial: 25, color: "bg-orange-600/80 text-white", v: 360, m: 135, h: 65 },
+      { name: "Clawed Chrome Variation /20", serial: 20, color: "bg-zinc-700 text-amber-300", v: 0, m: 0, h: 210 },
+      { name: "Black Refractor / Wave / X-Fractor /10", serial: 10, color: "bg-neutral-950 border border-slate-500 text-white", v: 900, m: 335, h: 155 },
+      { name: "Red Refractor / Wave / X-Fractor /5", serial: 5, color: "bg-red-700 text-white", v: 1800, m: 670, h: 310 },
+      { name: "SuperFractor 1/1", serial: 1, color: "bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-slate-950 font-black", v: 17150, m: 6400, h: 1950 }
+    ];
 
-      const label = document.getElementById('monthsLabel');
-      label.textContent = currentDepletionMonths === 0 
-        ? '0 Months (Day 1 Fresh)' 
-        : `${currentDepletionMonths}m (~${depletionPct}% Ripped)`;
+    // 2026 Topps Marvel Neon Base + Chrome Neon Etch Parallels (200-card checklist)
+    const NEON_BASE_PARALLELS = [
+      { name: "Neon Base + Chrome Etch", serial: null, color: "bg-fuchsia-950 text-fuchsia-200", v: 0.25, m: 0.22, h: 0.20 },
+      { name: "Rainbow / Diamante / Neon Pulsar", serial: null, color: "bg-fuchsia-800/70 text-white", v: 2.3, m: 2.0, h: 1.5 },
+      { name: "Yellow Neon Foil /275", serial: 275, color: "bg-yellow-800/80 text-yellow-100", v: 75, m: 35, h: 28 },
+      { name: "Blue Neon Foil /150", serial: 150, color: "bg-blue-800/80 text-blue-100", v: 135, m: 62, h: 48 },
+      { name: "Green Neon Foil /99", serial: 99, color: "bg-emerald-800/80 text-emerald-100", v: 205, m: 92, h: 72 },
+      { name: "Jubilee Fireworks Foil /89", serial: 89, color: "bg-pink-700/80 text-yellow-200", v: 230, m: 104, h: 80 },
+      { name: "Guardians Galaxy Foil /69", serial: 69, color: "bg-purple-800/80 text-rose-200", v: 295, m: 135, h: 105 },
+      { name: "Gold Neon + Etch /50", serial: 50, color: "bg-amber-700/80 text-amber-100", v: 390, m: 110, h: 68 },
+      { name: "Iron Man Red & Gold Foil /39", serial: 39, color: "bg-red-800/80 text-amber-200", v: 520, m: 235, h: 180 },
+      { name: "Orange Neon + Etch /25", serial: 25, color: "bg-orange-600/80 text-white", v: 780, m: 220, h: 135 },
+      { name: "Black Neon + Etch /10", serial: 10, color: "bg-neutral-950 border border-fuchsia-400 text-white", v: 1950, m: 550, h: 340 },
+      { name: "Red Neon + Etch /5", serial: 5, color: "bg-rose-700 text-white", v: 3900, m: 1100, h: 680 },
+      { name: "FoilFractor 1/1", serial: 1, color: "bg-gradient-to-r from-fuchsia-400 via-amber-300 to-cyan-400 text-slate-950 font-black", v: 19500, m: 5500, h: 3400 }
+    ];
 
-      document.getElementById('popDepletion').textContent = `${depletionPct}%`;
-      document.getElementById('popGrailFactor').textContent = `${grailSurvival}%`;
+    // Insert Set Definitions
+    const INSERT_SETS = {
+      "Marvel Icons": { family: "chrome", size: 20, baseOdds: { v: 6, m: 4, h: 3 }, numFactor: 1.3 },
+      "Future Stars": { family: "chrome", size: 20, baseOdds: { v: 8, m: 6, h: 4 }, numFactor: 1.1 },
+      "Avengers Infinity": { family: "chrome", size: 15, baseOdds: { v: 12, m: 8, h: 6 }, numFactor: 1.2 },
+      "65 Fantastic Years": { family: "chrome", size: 10, baseOdds: { v: 8, m: 12, h: 12 }, numFactor: 1.0 },
+      "60 Yrs Black Panther": { family: "chrome", size: 10, baseOdds: { v: 20, m: 16, h: 12 }, numFactor: 1.0 },
+      "X-Men / X-Force": { family: "chrome", size: 15, baseOdds: { v: 10, m: 8, h: 6 }, numFactor: 1.15 },
+      "Marvel Reflections": { family: "chrome", size: 10, baseOdds: { v: 120, m: 80, h: 48 }, numFactor: 0.6 },
+      "Marvel Snap": { family: "neon", size: 25, baseOdds: { v: 5, m: 4, h: 3 }, numFactor: 1.25 },
+      "Manga Madness": { family: "neon", size: 15, baseOdds: { v: 10, m: 7, h: 5 }, numFactor: 1.2 },
+      "Neon Tarots": { family: "neon", size: 15, baseOdds: { v: 28, m: 16, h: 10 }, numFactor: 0.9 },
+      "Marvel Murals": { family: "neon", size: 15, baseOdds: { v: 40, m: 22, h: 14 }, numFactor: 0.85 },
+      "Pet Avengers / Glow Up": { family: "neon", size: 15, baseOdds: { v: 9, m: 6, h: 5 }, numFactor: 1.0 }
+    };
 
-      recalculateAllOdds();
-    }
+    // Full 200-Card Official 2026 Topps Chrome & Neon Checklist (#1 Abomination to #200 X-23)
+    const RAW_NAMES_200 = [
+      "Abomination", "Adam Warlock", "Agatha Harkness", "Amaranth", "America Chavez",
+      "Ant-Man", "Apocalypse", "Ares", "Baron Zemo", "Beast",
+      "Beta Ray Bill", "Black Bolt", "Black Cat", "Black Knight", "Black Panther",
+      "Black Widow", "Blade", "Blink", "Captain America", "Captain Britain",
+      "Captain Marvel", "Carnage", "Colossus", "Cosmic Ghost Rider", "Crystal",
+      "Cyclops", "Daken", "Daredevil", "Dark Gwenpool", "Darkhawk",
+      "Dazzler", "Deadpool", "Deathbird", "Doc Samson", "Doctor Doom",
+      "Doctor Octopus", "Doctor Voodoo", "Domino", "Dracula", "Drax",
+      "Emma Frost", "Enchantress", "Falcon", "Galactus", "Green Goblin",
+      "Groot", "Hawkeye", "Hercules", "Hope Summers", "Hulk",
+      "Human Torch", "Iceman", "Ikaris", "Infernal Hulk", "Invisible Woman",
+      "Iron Fist", "Iron Man", "Ironheart", "Jean Grey", "Jeff the Land Shark",
+      "Jubilee", "Juggernaut", "Kate Bishop", "Kid Juggernaut", "Kingpin",
+      "Kitty Pryde", "Kraven the Hunter", "Leader", "Lizard", "Lockjaw",
+      "Logan", "Luke Cage", "M.O.D.O.K.", "Magneto", "Man-Thing",
+      "Mantis", "Mephisto", "Miles Morales", "Mister Fantastic", "Mister Sinister",
+      "Moon Knight", "Morbius", "Ms. Marvel", "Multiple Man", "Mysterio",
+      "Mystique", "Nightcrawler", "Nightdrifter", "Nova", "Omega Red",
+      "Professor X", "Psylocke", "Quicksilver", "Rasputin IV", "Rek-Rap",
+      "Revelation", "Rhino", "Rocket Raccoon", "Rogue", "Sleeper Agent",
+      "Angela", "Anti-Venom", "Arachnix", "Arcade", "Archangel",
+      "Chameleon", "Clea", "Crossbones", "Deathlok", "Devil Dinosaur",
+      "Doctor Strange", "Doom 2099", "Doyle Dormammu", "Elbecca Voss", "Electro",
+      "Elektra", "Evangeline", "Exodus", "Glitch", "Grandmaster",
+      "Gwenpool", "Hallows' Eve", "Hellcat", "Hellgate", "Hellverine",
+      "Hobgoblin", "Iron Cat", "Kid Venom", "Knull", "Lady Henrietta",
+      "Loki", "Luna Snow", "Maestro", "Magik", "Mar-Vell",
+      "Mary Jane", "Misery", "Moon Girl", "Nimrod", "SP//dr",
+      "Rachel Summers", "Raelith", "Rapid", "Sabretooth", "Scarlet Witch",
+      "Scarlet Spider", "Scorpion", "Scream", "Sentry", "Shang-Chi",
+      "She-Hulk", "She-Venom", "Shocker", "Shuri", "Silence",
+      "Silk", "Silver Surfer", "Silver Sable", "Sister Sorrow", "Spider-Boy",
+      "Spider-Girl", "Spider-Ham", "Spider-Man", "Spider-Man 2099", "Spider-Man Noir",
+      "Spider-Punk", "Spider-Woman", "Star-Lord", "Storm", "Strong Guy",
+      "Stryfe", "Sunspot", "Taskmaster", "Thanos", "The Thing",
+      "Thena", "Thor", "Throg", "Tigra", "Tombstone",
+      "Toxin", "U.S. Agent", "Ultimate Daredevil", "Ultimate Wolverine", "Ultron",
+      "Union Jack", "Valkyrie", "Venom", "Vision", "Vulture",
+      "War Machine", "Warlock", "Wasp", "Weapon X", "Werewolf by Night",
+      "White Widow", "Winter Soldier", "Wolverine", "Wonder Man", "X-23"
+    ];
 
-    function setPreset(val, mega, hobby) {
-      document.getElementById('chromeVal').value = val;
-      document.getElementById('chromeMega').value = mega;
-      document.getElementById('neonHobby').value = hobby;
-      recalculateAllOdds();
-    }
+    // Map specific characters to their real insert sets for accurate multi-card weighting
+    const INSERT_MAP = {
+      "Spider-Man": ["Marvel Icons", "Avengers Infinity", "Marvel Snap", "Manga Madness", "Neon Tarots", "Marvel Murals"],
+      "Wolverine": ["Marvel Icons", "X-Men / X-Force", "Marvel Reflections", "Marvel Snap", "Manga Madness", "Marvel Murals"],
+      "Hulk": ["Avengers Infinity", "Marvel Reflections", "Marvel Snap", "Neon Tarots", "Marvel Murals"],
+      "Infernal Hulk": ["Avengers Infinity", "Marvel Snap", "Neon Tarots"],
+      "Iron Man": ["Avengers Infinity", "Marvel Reflections", "Marvel Snap", "Manga Madness", "Marvel Murals"],
+      "Captain America": ["Avengers Infinity", "Marvel Snap", "Neon Tarots", "Marvel Murals"],
+      "Thor": ["Avengers Infinity", "Marvel Snap", "Neon Tarots", "Marvel Murals"],
+      "Daredevil": ["Marvel Icons", "Marvel Snap", "Neon Tarots"],
+      "Moon Girl": ["Future Stars", "Marvel Snap", "Pet Avengers / Glow Up"],
+      "Devil Dinosaur": ["Future Stars", "Marvel Snap", "Pet Avengers / Glow Up"],
+      "Moon Knight": ["Marvel Icons", "Marvel Snap", "Neon Tarots"],
+      "Scarlet Witch": ["Marvel Icons", "Avengers Infinity", "Manga Madness", "Neon Tarots"],
+      "Doctor Doom": ["65 Fantastic Years", "Marvel Snap", "Neon Tarots", "Marvel Murals"],
+      "Black Panther": ["60 Yrs Black Panther", "Avengers Infinity", "Marvel Snap", "Marvel Murals"],
+      "Shuri": ["60 Yrs Black Panther", "Marvel Snap"],
+      "Miles Morales": ["Marvel Icons", "Marvel Snap", "Manga Madness", "Marvel Murals"],
+      "Gwenpool": ["Marvel Icons", "Future Stars", "Manga Madness"],
+      "Dark Gwenpool": ["Future Stars", "Manga Madness"],
+      "Jeff the Land Shark": ["Marvel Icons", "Pet Avengers / Glow Up", "Marvel Snap"],
+      "Venom": ["Marvel Reflections", "Marvel Snap", "Manga Madness", "Marvel Murals"],
+      "Carnage": ["Marvel Icons", "Marvel Reflections", "Marvel Snap"],
+      "Deadpool": ["X-Men / X-Force", "Marvel Snap", "Manga Madness", "Marvel Murals"],
+      "Storm": ["X-Men / X-Force", "60 Yrs Black Panther", "Marvel Snap", "Neon Tarots"],
+      "Jean Grey": ["X-Men / X-Force", "Marvel Snap", "Neon Tarots"],
+      "Magneto": ["X-Men / X-Force", "Marvel Snap", "Neon Tarots"],
+      "Cyclops": ["X-Men / X-Force", "Marvel Snap"],
+      "Rogue": ["X-Men / X-Force", "Marvel Snap", "Manga Madness"],
+      "Psylocke": ["X-Men / X-Force", "Manga Madness", "Marvel Snap"],
+      "Emma Frost": ["X-Men / X-Force", "Manga Madness"],
+      "Magik": ["X-Men / X-Force", "Manga Madness", "Neon Tarots"],
+      "X-23": ["X-Men / X-Force", "Marvel Reflections", "Manga Madness"],
+      "Mister Fantastic": ["65 Fantastic Years", "Marvel Snap"],
+      "Invisible Woman": ["65 Fantastic Years", "Marvel Snap", "Manga Madness"],
+      "Human Torch": ["65 Fantastic Years", "Marvel Snap"],
+      "The Thing": ["65 Fantastic Years", "Marvel Snap"],
+      "Silver Surfer": ["65 Fantastic Years", "Marvel Snap", "Neon Tarots"],
+      "Galactus": ["65 Fantastic Years", "Marvel Snap", "Neon Tarots"],
+      "Black Cat": ["Marvel Icons", "Manga Madness", "Marvel Snap"],
+      "Silk": ["Marvel Icons", "Manga Madness"],
+      "Elektra": ["Marvel Icons", "Marvel Snap"],
+      "Dazzler": ["Marvel Icons", "X-Men / X-Force"],
+      "Kingpin": ["Marvel Icons", "Marvel Snap"],
+      "Mary Jane": ["Marvel Icons", "Manga Madness"],
+      "Beast": ["Marvel Icons", "X-Men / X-Force"],
+      "Spider-Woman": ["Marvel Icons", "Marvel Snap"],
+      "Doctor Strange": ["Avengers Infinity", "Neon Tarots", "Marvel Snap"],
+      "Thanos": ["Avengers Infinity", "Neon Tarots", "Marvel Murals"],
+      "Black Widow": ["Avengers Infinity", "Marvel Snap"],
+      "Captain Britain": ["Future Stars", "X-Men / X-Force"],
+      "Nova": ["Future Stars", "Marvel Snap"],
+      "Tigra": ["Avengers Infinity", "Pet Avengers / Glow Up"],
+      "Hellcat": ["Future Stars", "Pet Avengers / Glow Up"],
+      "Black Knight": ["Avengers Infinity", "Future Stars"],
+      "Luna Snow": ["Future Stars", "Manga Madness", "Marvel Snap"],
+      "Kid Juggernaut": ["Future Stars", "Marvel Snap"],
+      "Angela": ["Future Stars", "Marvel Snap"],
+      "Lockjaw": ["Pet Avengers / Glow Up", "Marvel Snap"],
+      "Throg": ["Pet Avengers / Glow Up", "Marvel Snap"]
+    };
 
-    function getExpectedNumberedCards() {
-      const v = parseInt(document.getElementById('chromeVal').value || 0, 10);
-      const m = parseInt(document.getElementById('chromeMega').value || 0, 10);
-      const h = parseInt(document.getElementById('neonHobby').value || 0, 10);
+    const CHARACTERS_200 = RAW_NAMES_200.map((name, idx) => {
+      const inserts = INSERT_MAP[name] || (idx % 3 === 0 ? ["Marvel Snap"] : idx % 3 === 1 ? ["Future Stars"] : ["Avengers Infinity"]);
       return {
-        v, m, h,
-        totalBoxes: v + m + h,
-        expectedNumbered: (v * 0.48) + (m * 1.05) + (h * 2.00),
-        totalBasePacks: (v * 7) + (m * 10) + (h * 12)
+        num: idx + 1,
+        name,
+        inserts
+      };
+    });
+
+    function getPackCounts() {
+      const cv = Math.max(0, parseInt(document.getElementById('chromeValue').value || 0, 10));
+      const cm = Math.max(0, parseInt(document.getElementById('chromeMega').value || 0, 10));
+      const ch = Math.max(0, parseInt(document.getElementById('chromeHobby').value || 0, 10));
+      const nv = Math.max(0, parseInt(document.getElementById('neonValue').value || 0, 10));
+      const nm = Math.max(0, parseInt(document.getElementById('neonMega').value || 0, 10));
+      const nh = Math.max(0, parseInt(document.getElementById('neonHobby').value || 0, 10));
+
+      return {
+        boxes: { cv, cm, ch, nv, nm, nh, total: cv + cm + ch + nv + nm + nh },
+        packs: {
+          cv: cv * BOX_PACKS.chromeValue,
+          cm: cm * BOX_PACKS.chromeMega,
+          ch: ch * BOX_PACKS.chromeHobby,
+          nv: nv * BOX_PACKS.neonValue,
+          nm: nm * BOX_PACKS.neonMega,
+          nh: nh * BOX_PACKS.neonHobby
+        }
       };
     }
 
-    function computeCharProb(weight, expectedHits, maxCap, months) {
-      const baseCharRate = 0.0066 * weight; // ~1 in 150 checklist baseline scaled by character weight
-      let effectiveShare = 0;
+    // Calculate probability of NOT hitting a single parallel tier across packs
+    function probMissTier(tier, packs, checklistSize, isNeon, months) {
+      const biasMult = getLooseBoxBiasMultiplier(tier.serial, months);
+      const vPacks = isNeon ? packs.nv : packs.cv;
+      const mPacks = isNeon ? packs.nm : packs.cm;
+      const hPacks = isNeon ? packs.nh : packs.ch;
 
-      PARALLEL_TIERS.forEach(tier => {
-        if (tier.cap <= maxCap) {
-          effectiveShare += tier.share * getTierMultiplier(tier.cap, months);
+      const pV = tier.v > 0 ? Math.min(1, (1 / (tier.v * checklistSize)) * biasMult) : 0;
+      const pM = tier.m > 0 ? Math.min(1, (1 / (tier.m * checklistSize)) * biasMult) : 0;
+      const pH = tier.h > 0 ? Math.min(1, (1 / (tier.h * checklistSize)) * biasMult) : 0;
+
+      return Math.pow(1 - pV, vPacks) * Math.pow(1 - pM, mPacks) * Math.pow(1 - pH, hPacks);
+    }
+
+    function calculateCharacterMetrics(char, packs, maxSerial, months) {
+      let missChromeBase = 1.0;
+      let missChromeInserts = 1.0;
+      let missNeonBase = 1.0;
+      let missNeonInserts = 1.0;
+      let missAnyNumbered = 1.0;
+
+      const numberedCap = maxSerial === 9999 ? 399 : maxSerial;
+
+      // 1. Chrome Base Parallels
+      CHROME_BASE_PARALLELS.forEach(tier => {
+        const includeInMain = maxSerial === 9999 ? true : (tier.serial !== null && tier.serial <= maxSerial);
+        if (includeInMain) {
+          missChromeBase *= probMissTier(tier, packs, 200, false, months);
+        }
+        if (tier.serial !== null && tier.serial <= numberedCap) {
+          missAnyNumbered *= probMissTier(tier, packs, 200, false, months);
         }
       });
 
-      const pSingleHit = baseCharRate * effectiveShare;
-      return 1 - Math.pow(1 - pSingleHit, expectedHits);
-    }
-
-    function formatPill(prob) {
-      const pct = (prob * 100).toFixed(1) + '%';
-      let cls = 'prob-low';
-      if (prob >= 0.35) cls = 'prob-high';
-      else if (prob >= 0.12) cls = 'prob-mid';
-      return `<span class="prob-pill ${cls}">${pct}</span>`;
-    }
-
-    function recalculateAllOdds() {
-      const stats = getExpectedNumberedCards();
-      const maxCap = parseInt(document.getElementById('serialCapSelect').value, 10);
-      const query = document.getElementById('charSearch').value.toLowerCase();
-
-      // Update Summary Banner
-      document.getElementById('statTotalBoxes').textContent = stats.totalBoxes;
-      document.getElementById('statBoxSplit').textContent = `${stats.v} Value • ${stats.m} Mega • ${stats.h} Neon`;
-      document.getElementById('statExpectedNumbered').textContent = stats.expectedNumbered.toFixed(1);
-
-      // Low numbered expected
-      let lowShare = 0;
-      PARALLEL_TIERS.forEach(t => {
-        if (t.cap <= 50) lowShare += t.share * getTierMultiplier(t.cap, currentDepletionMonths);
-      });
-      document.getElementById('statExpectedLow').textContent = (stats.expectedNumbered * lowShare).toFixed(1);
-
-      // Any 1/1 Superfractor across entire checklist
-      const superRate = 0.0048 * getTierMultiplier(1, currentDepletionMonths);
-      const superProb = (1 - Math.pow(1 - superRate, stats.expectedNumbered)) * 100;
-      document.getElementById('statSuperOdds').textContent = `${superProb.toFixed(1)}%`;
-      document.getElementById('statSuperSub').textContent = currentDepletionMonths === 0 
-        ? 'Day 1 Baseline Probability' 
-        : `Adjusted for ${currentDepletionMonths}m Loose-Box Bias`;
-
-      document.getElementById('thNumberedCol').textContent = maxCap === 999 
-        ? 'Any Numbered Card %' 
-        : `Numbered ≤ /${maxCap} %`;
-
-      // Render Table
-      const tbody = document.getElementById('charTableBody');
-      tbody.innerHTML = '';
-
-      CHARACTERS.filter(c => c.name.toLowerCase().includes(query)).forEach(char => {
-        const probSelected = computeCharProb(char.weight, stats.expectedNumbered, maxCap, currentDepletionMonths);
-        const prob50 = computeCharProb(char.weight, stats.expectedNumbered, 50, currentDepletionMonths);
-        const basePullProb = Math.min(0.999, 1 - Math.pow(1 - (0.018 * char.weight), stats.totalBasePacks));
-
-        const tr = document.createElement('tr');
-        tr.className = 'char-row';
-        tr.onclick = () => openCharModal(char);
-        tr.innerHTML = `
-          <td><div class="char-name">${char.name} <span class="char-tag">${char.tag}</span></div></td>
-          <td>${char.weight.toFixed(2)}x</td>
-          <td>${(basePullProb * 100).toFixed(1)}%</td>
-          <td>${formatPill(probSelected)}</td>
-          <td>${formatPill(prob50)}</td>
-          <td style="color:var(--accent-cyan); font-weight:600; font-size:0.82rem;">View Rainbow →</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function openCharModal(char) {
-      const stats = getExpectedNumberedCards();
-      document.getElementById('modalTitle').textContent = `${char.name} — Rainbow Pull Breakdown`;
-      document.getElementById('modalSubtitle').textContent = `Based on ${stats.totalBoxes} boxes (${stats.expectedNumbered.toFixed(1)} expected numbered hits) • Market Age: ${currentDepletionMonths}m`;
-
-      const tbody = document.getElementById('modalTableBody');
-      tbody.innerHTML = '';
-
-      const baseCharRate = 0.0066 * char.weight;
-      PARALLEL_TIERS.forEach(tier => {
-        const pDay1 = 1 - Math.pow(1 - (baseCharRate * tier.share), stats.expectedNumbered);
-        const mult = getTierMultiplier(tier.cap, currentDepletionMonths);
-        const pAdj = 1 - Math.pow(1 - (baseCharRate * tier.share * mult), stats.expectedNumbered);
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td><strong>${tier.name}</strong></td>
-          <td>/${tier.cap}</td>
-          <td>${(pDay1 * 100).toFixed(2)}%</td>
-          <td style="color:var(--accent-cyan); font-weight:700;">${(pAdj * 100).toFixed(2)}%</td>
-        `;
-        tbody.appendChild(row);
+      // 2. Neon Base + Chrome Etch Parallels
+      NEON_BASE_PARALLELS.forEach(tier => {
+        const includeInMain = maxSerial === 9999 ? true : (tier.serial !== null && tier.serial <= maxSerial);
+        if (includeInMain) {
+          missNeonBase *= probMissTier(tier, packs, 200, true, months);
+        }
+        if (tier.serial !== null && tier.serial <= numberedCap) {
+          missAnyNumbered *= probMissTier(tier, packs, 200, true, months);
+        }
       });
 
-      document.getElementById('charModal').classList.add('open');
+      // 3. Character's Active Insert Sets
+      char.inserts.forEach(insName => {
+        const ins = INSERT_SETS[insName];
+        if (!ins) return;
+        const isNeon = ins.family === "neon";
+
+        // Unnumbered Insert Base
+        if (maxSerial === 9999) {
+          const baseTier = { serial: null, v: ins.baseOdds.v, m: ins.baseOdds.m, h: ins.baseOdds.h };
+          const mBase = probMissTier(baseTier, packs, ins.size, isNeon, months);
+          if (isNeon) missNeonInserts *= mBase;
+          else missChromeInserts *= mBase;
+        }
+
+        // Numbered Insert Parallels (/99, /50, /25, /10, /5, 1/1)
+        const insParallels = [
+          { serial: 99, v: 320 / ins.numFactor, m: 140 / ins.numFactor, h: 75 / ins.numFactor },
+          { serial: 50, v: 640 / ins.numFactor, m: 260 / ins.numFactor, h: 140 / ins.numFactor },
+          { serial: 25, v: 1280 / ins.numFactor, m: 520 / ins.numFactor, h: 280 / ins.numFactor },
+          { serial: 10, v: 3200 / ins.numFactor, m: 1300 / ins.numFactor, h: 700 / ins.numFactor },
+          { serial: 5,  v: 6400 / ins.numFactor, m: 2600 / ins.numFactor, h: 1400 / ins.numFactor },
+          { serial: 1,  v: 32000 / ins.numFactor, m: 13000 / ins.numFactor, h: 7000 / ins.numFactor }
+        ];
+
+        insParallels.forEach(ip => {
+          if (ip.serial <= maxSerial) {
+            const mIp = probMissTier(ip, packs, ins.size, isNeon, months);
+            if (isNeon) missNeonInserts *= mIp;
+            else missChromeInserts *= mIp;
+          }
+          if (ip.serial <= numberedCap) {
+            missAnyNumbered *= probMissTier(ip, packs, ins.size, isNeon, months);
+          }
+        });
+      });
+
+      return {
+        chromeBasePct: (1 - missChromeBase) * 100,
+        chromeInsPct: (1 - missChromeInserts) * 100,
+        neonBasePct: (1 - missNeonBase) * 100,
+        neonInsPct: (1 - missNeonInserts) * 100,
+        combinedNumPct: (1 - missAnyNumbered) * 100
+      };
     }
 
-    function closeModal() {
-      document.getElementById('charModal').classList.remove('open');
+    function formatBadge(pct) {
+      let style = "bg-slate-800 text-slate-300 border-slate-700";
+      if (pct >= 40) style = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
+      else if (pct >= 15) style = "bg-amber-500/20 text-amber-300 border-amber-500/40";
+      else if (pct >= 3) style = "bg-cyan-500/15 text-cyan-300 border-cyan-500/30";
+      return `<span class="inline-block px-2.5 py-0.5 rounded-md text-xs font-extrabold border ${style}">${pct.toFixed(1)}%</span>`;
     }
 
-    function switchTab(viewId, btn) {
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById(viewId).classList.add('active');
-      btn.classList.add('active');
+    function onDepletionChange(val) {
+      depletionMonths = parseInt(val, 10);
+      const depPct = (getGlobalDepletion(depletionMonths) * 100).toFixed(0);
+      const grailSurvival = (getLooseBoxBiasMultiplier(1, depletionMonths) * 100).toFixed(1);
+
+      document.getElementById('depletionBadge').textContent = depletionMonths === 0
+        ? "0m (Day 1)"
+        : `${depletionMonths}m (~${depPct}% Ripped)`;
+      document.getElementById('helpRippedPct').textContent = `${depPct}%`;
+      document.getElementById('helpGrailSurvival').textContent = `${grailSurvival}%`;
+
+      updateCalculator();
+    }
+
+    function applyPreset(cv, cm, ch, nv, nm, nh) {
+      document.getElementById('chromeValue').value = cv;
+      document.getElementById('chromeMega').value = cm;
+      document.getElementById('chromeHobby').value = ch;
+      document.getElementById('neonValue').value = nv;
+      document.getElementById('neonMega').value = nm;
+      document.getElementById('neonHobby').value = nh;
+      updateCalculator();
+    }
+
+    function updateCalculator() {
+      const { boxes, packs } = getPackCounts();
+      const totalPacks = packs.cv + packs.cm + packs.ch + packs.nv + packs.nm + packs.nh;
+      const maxSerial = parseInt(document.getElementById('maxSerialFilter').value, 10);
+      const search = document.getElementById('charSearchInput').value.trim().toLowerCase();
+      const sortBy = document.getElementById('sortOrderSelect').value;
+
+      // Expected Numbered Cards Calculation
+      const expNumbered = (boxes.cv * 0.48) + (boxes.cm * 1.05) + (boxes.ch * 2.25) +
+                          (boxes.nv * 0.40) + (boxes.nm * 1.05) + (boxes.nh * 2.00);
+      const lowBias = getLooseBoxBiasMultiplier(25, depletionMonths);
+      const expLow = expNumbered * 0.288 * lowBias;
+
+      // 1/1 Probability Across Entire Break
+      const superMult = getLooseBoxBiasMultiplier(1, depletionMonths);
+      const pOneOfOne = 1 - Math.pow(1 - (0.0049 * superMult), expNumbered);
+
+      // Update Top KPI Strip
+      document.getElementById('kpiBoxesPacks').textContent = `${boxes.total} Boxes`;
+      document.getElementById('kpiPacksSub').textContent = `${totalPacks.toLocaleString()} Total Packs`;
+      document.getElementById('kpiTotalNumbered').textContent = `${expNumbered.toFixed(1)} Hits`;
+      const lowRange = Math.max(0, Math.round(expNumbered * 0.96));
+      const highRange = Math.round(expNumbered * 1.04);
+      document.getElementById('kpiNumberedRange').textContent = `Est. Range: ${lowRange} – ${highRange} #’d`;
+      document.getElementById('kpiLowNumbered').textContent = `${expLow.toFixed(1)} Hits`;
+      document.getElementById('kpiOneOfOne').textContent = `${(pOneOfOne * 100).toFixed(1)}%`;
+      document.getElementById('kpiFilterCap').textContent = maxSerial === 9999 ? "All Parallels" : `Numbered ≤ /${maxSerial}`;
+      document.getElementById('kpiDepletionState').textContent = depletionMonths === 0
+        ? "Day 1 Fresh (0m)"
+        : `${depletionMonths}m Depleted Market`;
+
+      document.getElementById('thCombinedNumbered').textContent = maxSerial === 9999
+        ? "Combined Any #’d %"
+        : `Combined ≤ /${maxSerial} %`;
+
+      // Compute & Filter Rows
+      let rows = CHARACTERS_200
+        .filter(c => c.name.toLowerCase().includes(search) || String(c.num) === search)
+        .map(c => ({
+          ...c,
+          metrics: calculateCharacterMetrics(c, packs, maxSerial, depletionMonths)
+        }));
+
+      if (sortBy === 'probDesc') {
+        rows.sort((a, b) => b.metrics.combinedNumPct - a.metrics.combinedNumPct);
+      } else if (sortBy === 'nameAsc') {
+        rows.sort((a, b) => a.name.localeCompare(b.name));
+      } else {
+        rows.sort((a, b) => a.num - b.num);
+      }
+
+      const tbody = document.getElementById('characterTableBody');
+      tbody.innerHTML = rows.map(r => `
+        <tr onclick="openRainbowModal(${r.num})" class="hover:bg-slate-800/60 cursor-pointer transition">
+          <td class="py-3 px-4 font-bold text-white whitespace-nowrap">
+            <span class="text-xs font-mono text-slate-400 mr-2">#${r.num}</span>${r.name}
+          </td>
+          <td class="py-3 px-3">
+            <div class="flex flex-wrap gap-1">
+              ${r.inserts.map(ins => `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">${ins}</span>`).join('')}
+            </div>
+          </td>
+          <td class="py-3 px-3 text-right font-semibold text-cyan-200">${r.metrics.chromeBasePct.toFixed(1)}%</td>
+          <td class="py-3 px-3 text-right font-semibold text-cyan-100">${r.metrics.chromeInsPct.toFixed(1)}%</td>
+          <td class="py-3 px-3 text-right font-semibold text-fuchsia-200">${r.metrics.neonBasePct.toFixed(1)}%</td>
+          <td class="py-3 px-3 text-right font-semibold text-fuchsia-100">${r.metrics.neonInsPct.toFixed(1)}%</td>
+          <td class="py-3 px-3 text-right">${formatBadge(r.metrics.combinedNumPct)}</td>
+          <td class="py-3 px-4 text-center">
+            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/25">
+              Rainbow ↗
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openRainbowModal(cardNum) {
+      const char = CHARACTERS_200.find(c => c.num === cardNum);
+      if (!char) return;
+      const { boxes, packs } = getPackCounts();
+
+      document.getElementById('modalCardNum').textContent = `#${char.num}`;
+      document.getElementById('modalCharName').textContent = `${char.name} — Complete Parallel Rainbow`;
+      document.getElementById('modalCharSub').textContent =
+        `Active Break: ${boxes.total} Boxes • Inserts: ${char.inserts.join(', ')} • Market Age: ${depletionMonths}m`;
+
+      const mAll = calculateCharacterMetrics(char, packs, 399, depletionMonths);
+      const m50 = calculateCharacterMetrics(char, packs, 50, depletionMonths);
+      const m10 = calculateCharacterMetrics(char, packs, 10, depletionMonths);
+      const m1 = calculateCharacterMetrics(char, packs, 1, depletionMonths);
+
+      document.getElementById('modalSummaryRow').innerHTML = `
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+          <div class="text-[10px] uppercase text-slate-400 font-bold">Any Numbered Card</div>
+          <div class="text-lg font-extrabold text-amber-300">${mAll.combinedNumPct.toFixed(2)}%</div>
+        </div>
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+          <div class="text-[10px] uppercase text-slate-400 font-bold">Numbered ≤ /50</div>
+          <div class="text-lg font-extrabold text-cyan-300">${m50.combinedNumPct.toFixed(2)}%</div>
+        </div>
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+          <div class="text-[10px] uppercase text-slate-400 font-bold">Numbered ≤ /10</div>
+          <div class="text-lg font-extrabold text-fuchsia-300">${m10.combinedNumPct.toFixed(2)}%</div>
+        </div>
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+          <div class="text-[10px] uppercase text-slate-400 font-bold">1/1 Super / FoilFractor</div>
+          <div class="text-lg font-extrabold text-emerald-300">${m1.combinedNumPct.toFixed(3)}%</div>
+        </div>
+      `;
+
+      const rainbowRows = [];
+
+      CHROME_BASE_PARALLELS.forEach(tier => {
+        const day1Pct = (1 - probMissTier(tier, packs, 200, false, 0)) * 100;
+        const adjPct = (1 - probMissTier(tier, packs, 200, false, depletionMonths)) * 100;
+        rainbowRows.push({
+          cat: "2026 Chrome Base",
+          catClass: "text-cyan-300",
+          name: tier.name,
+          badge: tier.color,
+          serial: tier.serial ? `/${tier.serial}` : "Unnumbered",
+          day1Pct,
+          adjPct
+        });
+      });
+
+      NEON_BASE_PARALLELS.forEach(tier => {
+        const day1Pct = (1 - probMissTier(tier, packs, 200, true, 0)) * 100;
+        const adjPct = (1 - probMissTier(tier, packs, 200, true, depletionMonths)) * 100;
+        rainbowRows.push({
+          cat: "2026 Neon Base+Etch",
+          catClass: "text-fuchsia-300",
+          name: tier.name,
+          badge: tier.color,
+          serial: tier.serial ? `/${tier.serial}` : "Unnumbered",
+          day1Pct,
+          adjPct
+        });
+      });
+
+      document.getElementById('modalRainbowBody').innerHTML = rainbowRows.map(row => `
+        <tr class="hover:bg-slate-800/40">
+          <td class="py-2.5 px-3 font-semibold ${row.catClass}">${row.cat}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded text-xs font-bold ${row.badge}">${row.name}</span>
+          </td>
+          <td class="py-2.5 px-3 font-mono text-xs text-slate-300">${row.serial}</td>
+          <td class="py-2.5 px-3 text-right text-slate-400">${row.day1Pct.toFixed(2)}%</td>
+          <td class="py-2.5 px-3 text-right font-bold text-cyan-300">${row.adjPct.toFixed(2)}%</td>
+        </tr>
+      `).join('');
+
+      const modal = document.getElementById('rainbowModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeRainbowModal() {
+      const modal = document.getElementById('rainbowModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function switchView(view) {
+      const calcSec = document.getElementById('viewCalculator');
+      const mathSec = document.getElementById('viewFormulas');
+      const calcBtn = document.getElementById('tabCalcBtn');
+      const mathBtn = document.getElementById('tabMathBtn');
+
+      if (view === 'calculator') {
+        calcSec.classList.remove('hidden');
+        mathSec.classList.add('hidden');
+        calcBtn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md";
+        mathBtn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition-all";
+      } else {
+        calcSec.classList.add('hidden');
+        mathSec.classList.remove('hidden');
+        mathBtn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-md";
+        calcBtn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition-all";
+      }
     }
 
     // Initialize on load
-    recalculateAllOdds();
+    updateCalculator();
   </script>
 </body>
 </html>
